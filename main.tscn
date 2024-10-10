@@ -1,0 +1,152 @@
+[gd_scene load_steps=17 format=3 uid="uid://dof7qngjmhq2w"]
+
+[ext_resource type="Shader" uid="uid://2c6gqr5fnn70" path="res://main.tres" id="1_47bkc"]
+[ext_resource type="Script" path="res://dood_control.gd" id="1_54x65"]
+[ext_resource type="Script" path="res://background.gd" id="2_hmv1h"]
+[ext_resource type="PackedScene" uid="uid://d46j5ugswq4x" path="res://pew.tscn" id="3_ccigh"]
+[ext_resource type="Script" path="res://target.gd" id="5_8qq1s"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8mi1m"]
+shader = ExtResource("1_47bkc")
+
+[sub_resource type="Gradient" id="Gradient_w2x84"]
+offsets = PackedFloat32Array(0.283951, 0.395062)
+colors = PackedColorArray(0.00966666, 0.58, 0, 1, 0.0635823, 0.0269543, 0.40625, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_xh2sx"]
+noise_type = 0
+seed = 3
+frequency = 0.0337
+offset = Vector3(-66.13, -288.35, 67.15)
+fractal_octaves = 2
+fractal_gain = 1.45519e-11
+fractal_weighted_strength = 0.55
+metadata/_preview_in_3d_space_ = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7f7ju"]
+width = 256
+height = 256
+in_3d_space = true
+seamless = true
+seamless_blend_skirt = 1.0
+color_ramp = SubResource("Gradient_w2x84")
+noise = SubResource("FastNoiseLite_xh2sx")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pabrp"]
+
+[sub_resource type="Gradient" id="Gradient_o0pmg"]
+offsets = PackedFloat32Array(0.305344, 0.732824, 0.824427, 1)
+colors = PackedColorArray(0.217774, 0.27002, 1, 1, 0.0792242, 0.0888042, 0.222656, 1, 1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ua2dc"]
+gradient = SubResource("Gradient_o0pmg")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.805128, 0.34359)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hfsty"]
+size = Vector2(127, 127)
+
+[sub_resource type="Gradient" id="Gradient_jeajq"]
+offsets = PackedFloat32Array(0.438272, 0.469136, 0.901235, 1)
+colors = PackedColorArray(1, 0.948482, 0.26326, 1, 1, 1, 1, 1, 0.894737, 0.894737, 0.894737, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_njv3i"]
+gradient = SubResource("Gradient_jeajq")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qvto5"]
+bg_color = Color(0.33, 0.2277, 0.28908, 0.564706)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="Main" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 3
+material = SubResource("ShaderMaterial_8mi1m")
+texture = SubResource("NoiseTexture2D_7f7ju")
+region_enabled = true
+region_rect = Rect2(-1e+07, -1e+07, 1e+07, 1e+07)
+region_filter_clip_enabled = true
+script = ExtResource("2_hmv1h")
+texnoise = SubResource("FastNoiseLite_xh2sx")
+
+[node name="Dood" type="RigidBody2D" parent="."]
+mass = 50.0
+script = ExtResource("1_54x65")
+pew_scene = ExtResource("3_ccigh")
+
+[node name="DoodCollision" type="CollisionShape2D" parent="Dood"]
+shape = SubResource("CircleShape2D_pabrp")
+
+[node name="DoodSprite" type="Sprite2D" parent="Dood"]
+texture = SubResource("GradientTexture2D_ua2dc")
+
+[node name="DoodSprite2" type="Sprite2D" parent="Dood"]
+position = Vector2(16, 0)
+scale = Vector2(0.5, 0.25)
+texture = SubResource("GradientTexture2D_ua2dc")
+
+[node name="Camera2D" type="Camera2D" parent="Dood"]
+position_smoothing_enabled = true
+rotation_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+
+[node name="FireSpeed" type="Timer" parent="Dood"]
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Target" type="RigidBody2D" parent="."]
+position = Vector2(320, 0)
+collision_layer = 4
+collision_mask = 5
+mass = 1000.0
+custom_integrator = true
+contact_monitor = true
+max_contacts_reported = 4
+script = ExtResource("5_8qq1s")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Target"]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_hfsty")
+
+[node name="Sprite2D" type="Sprite2D" parent="Target"]
+scale = Vector2(2, 2)
+texture = SubResource("GradientTexture2D_njv3i")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer"]
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 284.0
+offset_bottom = 352.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_qvto5")
+text = "W = forwards
+S = backwards
+left mouse = pew
+right mouse = break (slows pew also)
+
+Compare to Godot Default Physics. 
+
+Try: Shooting target, ram target, movement.
+
+Notice: A 10kg shot affecting 1000kg object's angular momentum. 
+
+Also, player object at 150kg.
+
+When pointing toward cursor, angular damp must be used as physics torque is applied, or rigidbod gets the wiggles. 
+
+I can't use raw rotation, though it doesn't suffer the wiggles, as this confuses Area2Ds and they register entry and exit when the object is inside of them and rotates, pretty sure that exists in any physics engine though."
+
+[connection signal="body_entered" from="Target" to="Target" method="_on_body_entered"]

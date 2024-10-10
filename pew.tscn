@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://d46j5ugswq4x"]
+
+[ext_resource type="Script" path="res://pew.gd" id="1_qyhwx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_iaikg"]
+radius = 8.0
+
+[sub_resource type="Gradient" id="Gradient_67p3w"]
+offsets = PackedFloat32Array(0, 0.48855, 0.572519)
+colors = PackedColorArray(1, 0.96234, 0.488594, 1, 1, 1, 1, 0.910891, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_pk3y0"]
+gradient = SubResource("Gradient_67p3w")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.80531, 0.212389)
+
+[node name="Pew" type="RigidBody2D" groups=["Player Weapon"]]
+collision_layer = 2
+collision_mask = 4
+mass = 10.0
+continuous_cd = 1
+script = ExtResource("1_qyhwx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_iaikg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_pk3y0")
+
+[node name="TTL Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="TTL Timer" to="." method="_on_ttl_timer_timeout"]
